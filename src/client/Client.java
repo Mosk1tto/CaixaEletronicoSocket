@@ -20,6 +20,12 @@ public class Client extends JFrame {
         JLabel textoIp = new JLabel("IP do servidor:");
         campoIp = new JTextField("127.0.0.1", 12);
         botaoConectar = new JButton("Conectar");
+
+        botaoConectar.addActionListener(e -> {
+            String ip =  campoIp.getText();
+            JOptionPane.showMessageDialog(this, "Conectado em " + ip);
+        });
+
         painel.add(textoIp);
         painel.add(campoIp);
         painel.add(botaoConectar);

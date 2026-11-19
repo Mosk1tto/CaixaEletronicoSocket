@@ -25,16 +25,16 @@ public class Client extends JFrame {
         botaoConectar = new JButton("Conectar");
 
         botaoConectar.addActionListener(e -> {
-            String ip =  campoIp.getText();
+            String ip = campoIp.getText();
             try {
-                socket = new Socket(String.valueOf(ip), 1024);
+                socket = new Socket(ip, 1024);
 
                 in = new DataInputStream(socket.getInputStream());
                 out = new DataOutputStream(socket.getOutputStream());
 
                 JOptionPane.showMessageDialog(this, "Conectado em " + ip);
             } catch (IOException ex) {
-                JOptionPane.showMessageDialog(this, "Erro ao conectar " + ex.getMessage(),"Erro", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Erro ao conectar: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
         });
 

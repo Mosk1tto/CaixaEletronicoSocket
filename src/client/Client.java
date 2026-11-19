@@ -1,9 +1,10 @@
 package client;
 
+import javax.swing.*;
 import java.io.*;
 import java.net.*;
 
-public class Client {
+public class Client extends JFrame {
 
     public void run() throws Exception {
 
@@ -26,5 +27,13 @@ public class Client {
         in.close();
         out.close();
         client.close();
+    }
+
+    public Client() {
+        setTitle("Caixa Eletrônico");
+        setSize(400, 500);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
+        setLocationRelativeTo(null);
     }
 }

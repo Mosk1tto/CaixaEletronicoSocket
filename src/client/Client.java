@@ -9,6 +9,9 @@ public class Client extends JFrame {
 
     private JTextField campoIp;
     private JButton botaoConectar;
+    private Socket socket;
+    private DataInputStream in;
+    private DataOutputStream out;
 
     public Client() {
         setTitle("Caixa Eletrônico");
@@ -23,7 +26,16 @@ public class Client extends JFrame {
 
         botaoConectar.addActionListener(e -> {
             String ip =  campoIp.getText();
-            JOptionPane.showMessageDialog(this, "Conectado em " + ip);
+            try {
+                socket = new Socket(String.valueOf(ip), 1024);
+
+                in = new DataInputStream(socket.getInputStream());
+                out = new DataOutputStream(socket.getOutputStream());
+
+                JOptionPane.showMessageDialog(this, "Conectado em " + ip);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Erro ao conectar " + ex.getMessage(),"Erro", JOptionPane.ERROR_MESSAGE);
+            }
         });
 
         painel.add(textoIp);
@@ -32,28 +44,5 @@ public class Client extends JFrame {
         add(painel, BorderLayout.NORTH);
 
         setVisible(true);
-    }
-
-    public void run() throws Exception {
-
-        // Passo 1 - Abrir conexão com o servidor na porta 1024
-        Socket client = new Socket("127.0.0.1", 1024);
-
-        // Passo 2 - Obter os fluxos de entrada e saída
-        DataInputStream in = new DataInputStream(client.getInputStream());
-        DataOutputStream out = new DataOutputStream(client.getOutputStream());
-
-        // Passo 3 - Comunicação com o servidor
-        out.writeInt(2);
-        out.writeUTF("Olá sou uma msg do cliente!");
-        int k = in.readInt();
-        String s = in.readUTF();
-        System.out.println("Int: " + k);
-        System.out.println("String: " + s);
-
-        // Passo 4 - Fechar fluxos e conexão
-        in.close();
-        out.close();
-        client.close();
     }
 }

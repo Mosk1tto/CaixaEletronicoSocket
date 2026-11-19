@@ -11,9 +11,15 @@ public class Client extends JFrame {
     private JButton botaoConectar;
     private JButton botaoSaldo;
     private Socket socket;
+
     private DataInputStream in;
     private DataOutputStream out;
+
     private JTextArea areaRespostas;
+
+    private JTextField campoConta;
+    private JPasswordField campoSenha;
+    private JTextField campoValor;
 
     public Client() {
         setTitle("Caixa Eletrônico");
@@ -21,7 +27,7 @@ public class Client extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        JPanel painel = new JPanel(new FlowLayout());
+        JPanel painelConexao = new JPanel(new FlowLayout());
         JLabel textoIp = new JLabel("IP do servidor:");
         campoIp = new JTextField("127.0.0.1", 12);
         botaoConectar = new JButton("Conectar");
@@ -40,10 +46,10 @@ public class Client extends JFrame {
             }
         });
 
-        painel.add(textoIp);
-        painel.add(campoIp);
-        painel.add(botaoConectar);
-        add(painel, BorderLayout.NORTH);
+        painelConexao.add(textoIp);
+        painelConexao.add(campoIp);
+        painelConexao.add(botaoConectar);
+        add(painelConexao, BorderLayout.NORTH);
 
         areaRespostas = new JTextArea();
         areaRespostas.setEditable(false);
@@ -53,7 +59,14 @@ public class Client extends JFrame {
         botaoSaldo = new JButton("Saldo");
         botaoSaldo.addActionListener(e -> enviar("SALDO"));
 
-        add(botaoSaldo, BorderLayout.SOUTH);
+        JPanel painelOperacoes = new JPanel(new GridLayout(0, 2, 5, 5));
+
+        painelOperacoes.add(new JLabel("Conta:"));
+        campoConta = new JTextField();
+        painelOperacoes.add(campoConta);
+        painelOperacoes.add(botaoSaldo);
+
+        add(painelOperacoes, BorderLayout.SOUTH);
 
         setVisible(true);
     }

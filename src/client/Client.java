@@ -1,30 +1,125 @@
 package client;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.net.*;
 
-public class Client {
+public class Client extends JFrame {
 
-    public void run() throws Exception {
+    private JTextField campoIp;
+    private JButton botaoConectar;
+    private JButton botaoSaldo;
+    private Socket socket;
 
-        // Passo 1 - Abrir conexão com o servidor na porta 1024
-        Socket client = new Socket("127.0.0.1", 1024);
+    private DataInputStream in;
+    private DataOutputStream out;
 
-        // Passo 2 - Obter os fluxos de entrada e saída
-        DataInputStream in = new DataInputStream(client.getInputStream());
-        DataOutputStream out = new DataOutputStream(client.getOutputStream());
+    private JTextArea areaRespostas;
 
-        // Passo 3 - Comunicação com o servidor
-        out.writeInt(2);
-        out.writeUTF("Olá sou uma msg do cliente!");
-        int k = in.readInt();
-        String s = in.readUTF();
-        System.out.println("Int: " + k);
-        System.out.println("String: " + s);
+    private JTextField campoConta;
+    private JPasswordField campoSenha;
+    private JTextField campoValor;
 
-        // Passo 4 - Fechar fluxos e conexão
-        in.close();
-        out.close();
-        client.close();
+    private JButton botaoEntrar;
+    private JButton botaoSacar;
+    private JButton botaoDepositar;
+    private JButton botaoSair;
+
+    public Client() {
+        setTitle("Caixa Eletrônico");
+        setSize(400, 500);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        JPanel painelConexao = new JPanel(new FlowLayout());
+        JLabel textoIp = new JLabel("IP do servidor:");
+        campoIp = new JTextField("127.0.0.1", 12);
+
+        botaoConectar = new JButton("Conectar");
+        botaoConectar.addActionListener(e -> {
+            String ip = campoIp.getText();
+            try {
+                socket = new Socket(ip, 1024);
+
+                in = new DataInputStream(socket.getInputStream());
+                out = new DataOutputStream(socket.getOutputStream());
+
+                JOptionPane.showMessageDialog(this, "Conectado em " + ip);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Erro ao conectar: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        painelConexao.add(textoIp);
+        painelConexao.add(campoIp);
+        painelConexao.add(botaoConectar);
+        add(painelConexao, BorderLayout.NORTH);
+
+        areaRespostas = new JTextArea();
+        areaRespostas.setEditable(false);
+
+        add(new JScrollPane(areaRespostas), BorderLayout.CENTER);
+
+        JPanel painelOperacoes = new JPanel(new GridLayout(0, 2, 5, 5));
+
+        painelOperacoes.add(new JLabel("Conta:"));
+        campoConta = new JTextField();
+        painelOperacoes.add(campoConta);
+
+        painelOperacoes.add(new JLabel("Senha:"));
+        campoSenha = new JPasswordField();
+        painelOperacoes.add(campoSenha);
+
+        botaoEntrar = new JButton("Entrar");
+        botaoEntrar.addActionListener(e -> enviar("LOGIN " + campoConta.getText() + " " + new String(campoSenha.getPassword())));
+        painelOperacoes.add(botaoEntrar);
+
+        botaoSaldo = new JButton("Saldo");
+        botaoSaldo.addActionListener(e -> enviar("SALDO"));
+        painelOperacoes.add(botaoSaldo);
+
+        painelOperacoes.add(new JLabel("Valor:"));
+        campoValor = new JTextField();
+        painelOperacoes.add(campoValor);
+
+        botaoSacar = new JButton("Sacar");
+        botaoSacar.addActionListener(e -> enviar("SAQUE " + campoValor.getText()));
+        painelOperacoes.add(botaoSacar);
+
+        botaoDepositar = new JButton("Depositar");
+        botaoDepositar.addActionListener(e -> enviar("DEPOSITO " + campoValor.getText()));
+        painelOperacoes.add(botaoDepositar);
+
+        botaoSair = new JButton("Sair");
+        botaoSair.addActionListener(e -> {
+            enviar("SAIR");
+            try {
+                if (socket != null) socket.close();
+            } catch (IOException ex) {
+            }
+            out = null;
+        });
+        painelOperacoes.add(botaoSair);
+
+        painelOperacoes.add(new JLabel(""));
+
+        add(painelOperacoes, BorderLayout.SOUTH);
+
+        setVisible(true);
+    }
+
+    private void enviar(String comando) {
+        if (out == null) {
+            JOptionPane.showMessageDialog(this, "Conecte ao servidor primeiro!", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        try {
+            out.writeUTF(comando);
+            String resposta = in.readUTF();
+            areaRespostas.append(resposta + "\n");
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Erro ao se comunicar com o servidor: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

@@ -93,18 +93,21 @@ public class Client extends JFrame {
 
         botaoSair = new JButton("Sair");
         botaoSair.addActionListener(e -> {
-            enviar("SAIR");
-            try {
-                if (socket != null) socket.close();
-            } catch (IOException ex) {
+            if (out != null) {
+                enviar("SAIR");
+                try {
+                    socket.close();
+                } catch (IOException ex) {
+                }
             }
-            out = null;
+            System.exit(0);
         });
-        painelOperacoes.add(botaoSair);
 
-        painelOperacoes.add(new JLabel(""));
+        JPanel painelInferior = new JPanel(new BorderLayout(5, 5));
+        painelInferior.add(painelOperacoes, BorderLayout.CENTER);
+        painelInferior.add(botaoSair, BorderLayout.SOUTH);
 
-        add(painelOperacoes, BorderLayout.SOUTH);
+        add(painelInferior, BorderLayout.SOUTH);
 
         setVisible(true);
     }

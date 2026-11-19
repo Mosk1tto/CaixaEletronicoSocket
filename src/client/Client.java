@@ -21,6 +21,11 @@ public class Client extends JFrame {
     private JPasswordField campoSenha;
     private JTextField campoValor;
 
+    private JButton botaoEntrar;
+    private JButton botaoSacar;
+    private JButton botaoDepositar;
+    private JButton botaoSair;
+
     public Client() {
         setTitle("Caixa Eletrônico");
         setSize(400, 500);
@@ -30,8 +35,8 @@ public class Client extends JFrame {
         JPanel painelConexao = new JPanel(new FlowLayout());
         JLabel textoIp = new JLabel("IP do servidor:");
         campoIp = new JTextField("127.0.0.1", 12);
-        botaoConectar = new JButton("Conectar");
 
+        botaoConectar = new JButton("Conectar");
         botaoConectar.addActionListener(e -> {
             String ip = campoIp.getText();
             try {
@@ -56,15 +61,48 @@ public class Client extends JFrame {
 
         add(new JScrollPane(areaRespostas), BorderLayout.CENTER);
 
-        botaoSaldo = new JButton("Saldo");
-        botaoSaldo.addActionListener(e -> enviar("SALDO"));
-
         JPanel painelOperacoes = new JPanel(new GridLayout(0, 2, 5, 5));
 
         painelOperacoes.add(new JLabel("Conta:"));
         campoConta = new JTextField();
         painelOperacoes.add(campoConta);
+
+        painelOperacoes.add(new JLabel("Senha:"));
+        campoSenha = new JPasswordField();
+        painelOperacoes.add(campoSenha);
+
+        botaoEntrar = new JButton("Entrar");
+        botaoEntrar.addActionListener(e -> enviar("LOGIN " + campoConta.getText() + " " + new String(campoSenha.getPassword())));
+        painelOperacoes.add(botaoEntrar);
+
+        botaoSaldo = new JButton("Saldo");
+        botaoSaldo.addActionListener(e -> enviar("SALDO"));
         painelOperacoes.add(botaoSaldo);
+
+        painelOperacoes.add(new JLabel("Valor:"));
+        campoValor = new JTextField();
+        painelOperacoes.add(campoValor);
+
+        botaoSacar = new JButton("Sacar");
+        botaoSacar.addActionListener(e -> enviar("SAQUE " + campoValor.getText()));
+        painelOperacoes.add(botaoSacar);
+
+        botaoDepositar = new JButton("Depositar");
+        botaoDepositar.addActionListener(e -> enviar("DEPOSITO " + campoValor.getText()));
+        painelOperacoes.add(botaoDepositar);
+
+        botaoSair = new JButton("Sair");
+        botaoSair.addActionListener(e -> {
+            enviar("SAIR");
+            try {
+                if (socket != null) socket.close();
+            } catch (IOException ex) {
+            }
+            out = null;
+        });
+        painelOperacoes.add(botaoSair);
+
+        painelOperacoes.add(new JLabel(""));
 
         add(painelOperacoes, BorderLayout.SOUTH);
 

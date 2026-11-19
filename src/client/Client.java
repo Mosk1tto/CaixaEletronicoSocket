@@ -9,9 +9,11 @@ public class Client extends JFrame {
 
     private JTextField campoIp;
     private JButton botaoConectar;
+    private JButton botaoSaldo;
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
+    private JTextArea areaRespostas;
 
     public Client() {
         setTitle("Caixa Eletrônico");
@@ -43,6 +45,30 @@ public class Client extends JFrame {
         painel.add(botaoConectar);
         add(painel, BorderLayout.NORTH);
 
+        areaRespostas = new JTextArea();
+        areaRespostas.setEditable(false);
+
+        add(new JScrollPane(areaRespostas), BorderLayout.CENTER);
+
+        botaoSaldo = new JButton("Saldo");
+        botaoSaldo.addActionListener(e -> enviar("SALDO"));
+
+        add(botaoSaldo, BorderLayout.SOUTH);
+
         setVisible(true);
+    }
+
+    private void enviar(String comando) {
+        if (out == null) {
+            JOptionPane.showMessageDialog(this, "Conecte ao servidor primeiro!", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        try {
+            out.writeUTF(comando);
+            String resposta = in.readUTF();
+            areaRespostas.append(resposta + "\n");
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Erro ao se comunicar com o servidor: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

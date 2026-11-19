@@ -21,12 +21,23 @@ public class Server {
         DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
         // Passo 4 - Comunicação com o cliente
-        int k = in.readInt();
-        String s = in.readUTF();
-        System.out.println("Int: " + k);
-        System.out.println("String: " + s);
-        out.writeInt(1);
-        out.writeUTF("Olá sou uma msg do servidor!");
+        String comando = "";
+        while (!comando.equalsIgnoreCase("SAIR")) {
+            try {
+                comando = in.readUTF();
+            } catch (EOFException e) {
+                System.out.println("Cliente desconectou.");
+                break;
+            }
+            System.out.println("Comando recebido: " + comando);
+
+            if (comando.equalsIgnoreCase("SAIR")) {
+                out.writeUTF("Encerrando conexao. Até logo!");
+            } else {
+                out.writeUTF("Servidor recebeu: " + comando);
+            }
+            out.flush();
+        }
 
         // Passo 5 - Fechar fluxos e socket do cliente
         in.close();
